@@ -1,0 +1,25 @@
+[english_task_1_model-config]
+EMBEDDING_FILE = /data/fasttext/data/wiki.en.vec
+MODEL_PATH = models/task_1/english/capsule_weights.h5
+PREDICTION_FILE = predictions/task_1/english/capsule_net.csv
+
+[english_task_2_model-config]
+EMBEDDING_FILE = /data/fasttext/data/wiki.en.vec
+MODEL_PATH = models/task_2/english/capsule_weights.h5
+PREDICTION_FILE = predictions/task_2/english/capsule_net.csv
+
+[english_task_3_model-config]
+EMBEDDING_FILE = /data/fasttext/data/wiki.en.vec
+MODEL_PATH = models/task_3/english/capsule_weights.h5
+PREDICTION_FILE = predictions/task_3/english/capsule_net.csv
+
+[german_task_1_model-config]
+EMBEDDING_FILE = /data/fasttext/wiki.de.vec
+MODEL_PATH = models/task_1/german/capsule_weights.h5
+PREDICTION_FILE = predictions/task_1/german/capsule_net.csv
+
+[german_task_2_model-config]
+EMBEDDING_FILE = /data/fasttext/wiki.de.vec
+MODEL_PATH = models/task_2/german/capsule_weights.h5
+PREDICTION_FILE = predictions/task_2/german/capsule_net.csv
+
