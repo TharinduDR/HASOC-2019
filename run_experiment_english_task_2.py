@@ -15,7 +15,7 @@ from tensorflow import set_random_seed
 from algo.nn.__keras.models import capsule, attention_capsule, cnn_2d, pooled_gru, lstm_attention, lstm_gru_attention
 from algo.nn.__keras.utility import f1_smart
 from embeddings import get_emb_matrix
-from preprocessing import clean_text, remove_names, entity_recognizing
+from preprocessing import clean_text, remove_names, entity_recognizing, remove_url
 
 
 def run_keras_experiment():
@@ -49,6 +49,11 @@ def run_keras_experiment():
     MODEL_PATH = configParser.get('english_task_2_model-config', 'MODEL_PATH')
     PREDICTION_FILE = configParser.get('english_task_2_model-config', 'PREDICTION_FILE')
 
+    print(train.head())
+
+    print("Removing URLs")
+    train[TEXT_COLUMN] = train[TEXT_COLUMN].apply(lambda x: remove_url(x))
+    test[TEXT_COLUMN] = test[TEXT_COLUMN].apply(lambda x: remove_url(x))
     print(train.head())
 
     print("Removing usernames")

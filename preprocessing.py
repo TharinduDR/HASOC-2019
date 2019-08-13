@@ -1,4 +1,5 @@
 import spacy
+import re
 
 nlp = spacy.load('de_core_news_sm')
 
@@ -35,3 +36,8 @@ def entity_recognizing(x):
             x = x.replace(ent.text, "name")
 
     return x
+
+
+def remove_url(x):
+    result = re.sub(r"http\S+", "", x)
+    return result
