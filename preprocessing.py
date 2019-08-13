@@ -41,3 +41,8 @@ def entity_recognizing(x):
 def remove_url(x):
     result = re.sub(r"http\S+", "", x)
     return result
+
+
+def handle_unicode(x):
+    x = x.decode('utf-8')
+    return x

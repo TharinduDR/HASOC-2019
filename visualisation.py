@@ -37,3 +37,20 @@ def plot_word_cloud(df):
     plt.axis('off')
     plt.tight_layout(pad=0)
     plt.show()
+
+
+def plot_hindi_word_cloud(df):
+    text = df.text.values
+    wordcloud = WordCloud( font_path='font/ArialUnicodeMS.ttf',
+        width = 3000,
+        height = 2000,
+        background_color = 'black',
+        stopwords = STOPWORDS).generate(str(text))
+    fig = plt.figure(
+        figsize = (40, 30),
+        facecolor = 'k',
+        edgecolor = 'k')
+    plt.imshow(wordcloud, interpolation = 'bilinear')
+    plt.axis('off')
+    plt.tight_layout(pad=0)
+    plt.show()
