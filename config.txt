@@ -1,5 +1,5 @@
 [english_task_1_model-config]
-EMBEDDING_FILE = E:/Models/crawl-300d-2M-subword/crawl-300d-2M-subword.vec
+EMBEDDING_FILE = /data/fasttext/data/wiki.en.vec
 MODEL_PATH = models/task_1/english/capsule_weights.h5
 PREDICTION_FILE = predictions/task_1/english/capsule_net.csv
 
@@ -23,3 +23,17 @@ EMBEDDING_FILE = /data/fasttext/wiki.de.vec
 MODEL_PATH = models/task_2/german/capsule_weights.h5
 PREDICTION_FILE = predictions/task_2/german/capsule_net.csv
 
+[hindi_task_1_model-config]
+EMBEDDING_FILE = /data/fasttext/wiki.hi.vec
+MODEL_PATH = models/task_1/hindi/capsule_weights.h5
+PREDICTION_FILE = predictions/task_1/hindi/capsule_net.csv
+
+[hindi_task_2_model-config]
+EMBEDDING_FILE = /data/fasttext/wiki.hi.vec
+MODEL_PATH = models/task_2/hindi/capsule_weights.h5
+PREDICTION_FILE = predictions/task_2/hindi/capsule_net.csv
+
+[hindi_task_3_model-config]
+EMBEDDING_FILE = /data/fasttext/wiki.hi.vec
+MODEL_PATH = models/task_3/hindi/capsule_weights.h5
+PREDICTION_FILE = predictions/task_3/hindi/capsule_net.csv
