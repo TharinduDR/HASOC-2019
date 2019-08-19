@@ -2,6 +2,7 @@ import configparser
 
 import numpy as np
 import pandas as pd
+from bert_text import run_on_dfs
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 from keras_preprocessing.sequence import pad_sequences
 from keras_preprocessing.text import Tokenizer
@@ -10,6 +11,7 @@ from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, recall_s
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import LabelEncoder
 from tensorflow import set_random_seed
+import tensorflow as tf
 
 from algo.nn.__keras.models import capsule, attention_capsule, cnn_2d, pooled_gru, lstm_attention, lstm_gru_attention
 from algo.nn.__keras.utility import f1_smart
@@ -166,6 +168,32 @@ def run_keras_experiment():
 def run_pytorch_experiment():
     seed(726)
     set_random_seed(726)
+    print('Reading files')
+
+    # Reading File Section - This should change
+    full = pd.read_csv("data/english_dataset.tsv", sep='\t',
+                       names=['text_id', 'text', 'task_1', 'task_2', 'task_3'])
+
+    train, test = train_test_split(full, test_size=0.2)
+
+    print('Completed reading')
+
+    #############
+    print("Train shape : ", train.shape)
+    print("Test shape : ", test.shape)
+
+    myparam = {
+        "DATA_COLUMN": "text",
+        "LABEL_COLUMN": "task_1",
+        "LEARNING_RATE": 2e-5,
+        "NUM_TRAIN_EPOCHS": 10
+    }
+
+    tf.logging.set_verbosity(tf.logging.INFO)
+    result, estimator = run_on_dfs(train, test, **myparam)
+    print(result)
+
+
 
 if __name__ == "__main__":
     seed(726)
