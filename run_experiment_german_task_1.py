@@ -24,6 +24,7 @@ def run_keras_experiment():
     full = pd.read_csv("data/german_dataset.tsv", sep='\t',
                              names=['text_id', 'text', 'task_1', 'task_2', 'task_3'])
 
+
     train, test = train_test_split(full, test_size=0.2)
 
     print('Completed reading')
@@ -119,7 +120,7 @@ def run_keras_experiment():
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.6, patience=1, min_lr=0.0001, verbose=2)
         earlystopping = EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=2, verbose=2, mode='auto')
         callbacks = [checkpoint, reduce_lr]
-        model = capsule(maxlen, max_features, embed_size, embedding_matrix, 1)
+        model = cnn_2d(maxlen, max_features, embed_size, embedding_matrix, 1)
         if i == 0: print(model.summary())
         model.fit(X_train, Y_train, batch_size=64, epochs=20, validation_data=(X_val, Y_val), verbose=2,
                   callbacks=callbacks,

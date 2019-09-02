@@ -26,6 +26,8 @@ def run_keras_experiment():
     full = pd.read_csv("data/english_dataset.tsv", sep='\t',
                              names=['text_id', 'text', 'task_1', 'task_2', 'task_3'])
 
+    test_2019 = pd.read_csv("data/hasoc2019_en_test.tsv", sep="\t", names=['text_id', 'text'])
+
     train, test = train_test_split(full, test_size=0.2)
 
     print('Completed reading')
@@ -33,6 +35,7 @@ def run_keras_experiment():
     #############
     print("Train shape : ", train.shape)
     print("Test shape : ", test.shape)
+    print("Test 2019 shape : ", test_2019.shape)
 
     # Variables
 
@@ -58,6 +61,7 @@ def run_keras_experiment():
     print("Removing usernames")
     train[TEXT_COLUMN] = train[TEXT_COLUMN].apply(lambda x: remove_names(x))
     test[TEXT_COLUMN] = test[TEXT_COLUMN].apply(lambda x: remove_names(x))
+    test_2019[TEXT_COLUMN] = test_2019[TEXT_COLUMN].apply(lambda x: remove_names(x))
     print(train.head())
     #
     # print("Identifying names")
@@ -69,11 +73,13 @@ def run_keras_experiment():
     print("Converting to lower-case")
     train[TEXT_COLUMN] = train[TEXT_COLUMN].str.lower()
     test[TEXT_COLUMN] = test[TEXT_COLUMN].str.lower()
+    test_2019[TEXT_COLUMN] = test_2019[TEXT_COLUMN].str.lower()
     print(train.head())
 
     print("Cleaning punctuation marks")
     train[TEXT_COLUMN] = train[TEXT_COLUMN].apply(lambda x: clean_text(x))
     test[TEXT_COLUMN] = test[TEXT_COLUMN].apply(lambda x: clean_text(x))
+    test_2019[TEXT_COLUMN] = test_2019[TEXT_COLUMN].apply(lambda x: clean_text(x))
     print(train.head())
 
     train['doc_len'] = train[TEXT_COLUMN].apply(lambda words: len(words.split(" ")))
@@ -86,6 +92,7 @@ def run_keras_experiment():
     # fill up the missing values
     X = train[TEXT_COLUMN].fillna("_na_").values
     X_test = test[TEXT_COLUMN].fillna("_na_").values
+    X_test_2019 = test_2019[TEXT_COLUMN].fillna("_na_").values
 
     # Tokenize the sentences
     tokenizer = Tokenizer(num_words=max_features, filters='')
@@ -93,10 +100,12 @@ def run_keras_experiment():
 
     X = tokenizer.texts_to_sequences(X)
     X_test = tokenizer.texts_to_sequences(X_test)
+    X_test_2019 = tokenizer.texts_to_sequences(X_test_2019)
 
     # Pad the sentences
     X = pad_sequences(X, maxlen=maxlen)
     X_test = pad_sequences(X_test, maxlen=maxlen)
+    X_test_2019 = pad_sequences(X_test_2019, maxlen=maxlen)
 
     # Get the target values
     Y = train[LABEL_COLUMN].values
@@ -120,6 +129,7 @@ def run_keras_experiment():
     kfold = StratifiedKFold(n_splits=5, random_state=10, shuffle=True)
     bestscore = []
     y_test = np.zeros((X_test.shape[0],))
+    y_test_2019 = np.zeros((X_test_2019.shape[0],))
     for i, (train_index, valid_index) in enumerate(kfold.split(X, encoded_Y)):
         X_train, X_val, Y_train, Y_val = X[train_index], X[valid_index], encoded_Y[train_index], encoded_Y[valid_index]
         filepath = MODEL_PATH
@@ -127,7 +137,7 @@ def run_keras_experiment():
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.6, patience=1, min_lr=0.0001, verbose=2)
         earlystopping = EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=2, verbose=2, mode='auto')
         callbacks = [checkpoint, reduce_lr]
-        model = capsule(maxlen, max_features, embed_size, embedding_matrix, 1)
+        model = attention_capsule(maxlen, max_features, embed_size, embedding_matrix, 1)
         if i == 0: print(model.summary())
         model.fit(X_train, Y_train, batch_size=64, epochs=20, validation_data=(X_val, Y_val), verbose=2,
                   callbacks=callbacks,
@@ -135,6 +145,7 @@ def run_keras_experiment():
         model.load_weights(filepath)
         y_pred = model.predict([X_val], batch_size=64, verbose=2)
         y_test += np.squeeze(model.predict([X_test], batch_size=64, verbose=2)) / 5
+        y_test_2019 += np.squeeze(model.predict([X_test_2019], batch_size=64, verbose=2)) / 5
         f1, threshold = f1_smart(np.squeeze(Y_val), np.squeeze(y_pred))
         print('Optimal F1: {:.4f} at threshold: {:.4f}'.format(f1, threshold))
         bestscore.append(threshold)
@@ -145,9 +156,15 @@ def run_keras_experiment():
     pred_test_y = (y_test > np.mean(bestscore)).astype(int)
     test['predictions'] = le.inverse_transform(pred_test_y)
 
+    y_test_2019 = y_test_2019.reshape((-1, 1))
+    pred_test_y_2019 = (y_test_2019 > np.mean(bestscore)).astype(int)
+    test_2019['task_1'] = le.inverse_transform(pred_test_y_2019)
+
+    test_2019 = test_2019[['text_id', 'task_1']]
+
     # save predictions
     file_path = PREDICTION_FILE
-    test.to_csv(file_path, sep='\t', encoding='utf-8')
+    test_2019.to_csv(file_path, sep='\t', encoding='utf-8')
 
     print('Saved Predictions')
 

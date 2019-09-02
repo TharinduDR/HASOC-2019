@@ -1,7 +1,7 @@
 [english_task_1_model-config]
 EMBEDDING_FILE = /data/fasttext/data/wiki.en.vec
 MODEL_PATH = models/task_1/english/capsule_weights.h5
-PREDICTION_FILE = predictions/task_1/english/capsule_net.csv
+PREDICTION_FILE = predictions/task_1/english/.csv
 
 [english_task_2_model-config]
 EMBEDDING_FILE = /data/fasttext/data/wiki.en.vec
